@@ -1,18 +1,11 @@
 import { Controller, Get } from '@nestjs/common';
-import { Todo } from './todo.model';
+import { TodosService } from './todos.service';
 
 @Controller('todos')
 export class TodosController {
+  constructor(private todosService: TodosService) {}
   @Get()
-  findAll(): Todo[] {
-    return [
-      {
-        id: 'fjkdf',
-        title: 'Example Todo',
-        description: 'An example of Todo',
-        priority: 'HIGH',
-        status: 'OPEN',
-      },
-    ];
+  findAll() {
+    return this.todosService.findAll();
   }
 }

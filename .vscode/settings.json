@@ -1,7 +1,9 @@
 {
     "cSpell.words": [
+        "Codegen",
         "nestjs",
-        "Todos"
+        "Todos",
+        "Xata"
     ],
     "editor.formatOnPaste": true,
     "editor.formatOnSave": true,
