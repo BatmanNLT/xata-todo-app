@@ -42,12 +42,12 @@ export class XataClient extends DatabaseClient<DatabaseSchema> {
 
 let instance: XataClient | undefined = undefined;
 
-export const getXataClient = () => {
+export const getXataClient = (obj: { apiKey: string; branch: string }) => {
   if (instance) return instance;
 
   instance = new XataClient({
-    apiKey: 'xau_pXBuyywOtlchJBuDKaUtZLkJg3ToiQzF1',
-    branch: 'dev',
+    apiKey: obj.apiKey,
+    branch: obj.branch,
   });
   return instance;
 };
