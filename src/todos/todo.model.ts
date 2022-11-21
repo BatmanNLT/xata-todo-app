@@ -6,5 +6,16 @@ export class Todo {
   priority: TodoPriority;
 }
 
-export type TodoStatus = 'OPEN' | 'DONE' | 'BLOCKED' | 'IN_PROGRESS';
-export type TodoPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+export enum TodoStatus {
+  OPEN = 'OPEN',
+  DONE = 'DONE',
+  BLOCKED = 'BLOCKED',
+  IN_PROGRESS = 'IN_PROGRESS',
+}
+
+export enum TodoPriority {
+  LOW = 'LOW',
+  MEDIUM = 'MEDIUM',
+  HIGH = 'HIGH',
+  CRITICAL = 'CRITICAL',
+}
