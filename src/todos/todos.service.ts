@@ -1,11 +1,14 @@
 import {
   BadRequestException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { getXataClient } from 'src/xata';
 import { ConfigService } from '@nestjs/config';
 import { UpdateTodoDto } from './dtos/update-todo.dto';
+import { CreateTodoDto } from './dtos/create-todo.dto';
+import { Todo, TodoStatus } from './todo.model';
 
 @Injectable()
 export class TodosService {
@@ -17,17 +20,25 @@ export class TodosService {
   });
 
   async findAll() {
-    const todos = await this.xataClient.db.todos.getAll();
-    return todos;
+    try {
+      const todos = await this.xataClient.db.todos.getAll();
+      return todos;
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 
   async findOne(id: string) {
-    const todo = await this.xataClient.db.todos.read(id);
+    try {
+      const todo = await this.xataClient.db.todos.read(id);
 
-    if (!todo) {
-      throw new NotFoundException(`No Todo found with id: ${id}`);
+      if (!todo) {
+        throw new NotFoundException(`No Todo found with id: ${id}`);
+      }
+      return todo;
+    } catch (error) {
+      throw new InternalServerErrorException(error);
     }
-    return todo;
   }
 
   async updateOne(id: string, updateTodoDto: UpdateTodoDto) {
@@ -51,7 +62,23 @@ export class TodosService {
       }
       return updatedTodo;
     } catch (error) {
-      console.log(error);
+      throw new InternalServerErrorException(error);
+    }
+  }
+
+  async createOne(createTodoDto: CreateTodoDto) {
+    const { title, description, priority } = createTodoDto;
+    const newTodo: Partial<Todo> = {
+      title,
+      description,
+      priority,
+      status: TodoStatus.OPEN,
+    };
+    try {
+      const createdRecord = await this.xataClient.db.todos.create(newTodo);
+      return createdRecord;
+    } catch (error) {
+      throw new InternalServerErrorException(error);
     }
   }
 }
