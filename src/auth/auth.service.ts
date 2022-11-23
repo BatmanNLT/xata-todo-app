@@ -9,6 +9,7 @@ import { User, UserRole } from './user.model';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { getXataClient } from 'src/xata';
+import { UserSignInDto } from './dtos/user-sign-in.dto';
 @Injectable()
 export class AuthService {
   constructor(private configService: ConfigService) {}
@@ -17,6 +18,10 @@ export class AuthService {
     apiKey: this.configService.get<string>('XATA_API_KEY'),
     branch: this.configService.get<string>('XATA_DATACLIENT_BRANCH'),
   });
+
+  async signIn(userSignInDto: UserSignInDto) {
+    const { username, password } = userSignInDto;
+  }
 
   async signUp(userSignupDto: UserSignUpDto) {
     const { email, password, username } = userSignupDto;
