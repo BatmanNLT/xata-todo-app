@@ -16,6 +16,15 @@ const tables = [
       { name: 'priority', type: 'string' },
     ],
   },
+  {
+    name: 'users',
+    columns: [
+      { name: 'username', type: 'string', unique: true },
+      { name: 'email', type: 'email' },
+      { name: 'role', type: 'string' },
+      { name: 'password', type: 'string' },
+    ],
+  },
 ] as const;
 
 export type SchemaTables = typeof tables;
@@ -24,8 +33,12 @@ export type InferredTypes = SchemaInference<SchemaTables>;
 export type Todos = InferredTypes['todos'];
 export type TodosRecord = Todos & XataRecord;
 
+export type Users = InferredTypes['users'];
+export type UsersRecord = Users & XataRecord;
+
 export type DatabaseSchema = {
   todos: TodosRecord;
+  users: UsersRecord;
 };
 
 const DatabaseClient = buildClient();
