@@ -11,9 +11,13 @@ import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { getXataClient } from 'src/xata';
 import { UserSignInDto } from './dtos/user-sign-in.dto';
+import { JwtService } from '@nestjs/jwt';
 @Injectable()
 export class AuthService {
-  constructor(private configService: ConfigService) {}
+  constructor(
+    private configService: ConfigService,
+    private jwtService: JwtService,
+  ) {}
 
   private xataClient = getXataClient({
     apiKey: this.configService.get<string>('XATA_API_KEY'),
@@ -37,6 +41,10 @@ export class AuthService {
       if (!isPasswordValid) {
         throw new UnauthorizedException(loginError);
       }
+      const payload = { username: record.username, sub: record.id };
+      return {
+        access_token: this.jwtService.sign(payload),
+      };
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
@@ -60,11 +68,7 @@ export class AuthService {
         password: securePwd,
         role: UserRole.USER,
       };
-      const record = await this.xataClient.db.users.create(createUserPayload);
-      console.log(
-        '🚀 ~ file: auth.service.ts ~ line 45 ~ AuthService ~ signUp ~ record',
-        record,
-      );
+      await this.xataClient.db.users.create(createUserPayload);
     } catch (error) {
       const uniqueConstraintBreachRegExp = /column \[(.*)\]: is not unique/;
       const evaluationResult = uniqueConstraintBreachRegExp.exec(error.message);

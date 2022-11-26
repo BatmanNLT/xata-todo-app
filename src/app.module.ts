@@ -7,10 +7,10 @@ import { AuthModule } from './auth/auth.module';
 @Module({
   imports: [
     TodosModule,
+    AuthModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    AuthModule,
   ],
   controllers: [TodosController],
   providers: [],
