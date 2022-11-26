@@ -23,8 +23,8 @@ export class AuthService {
     const { username, password } = userSignInDto;
   }
 
-  async signUp(userSignupDto: UserSignUpDto) {
-    const { email, password, username } = userSignupDto;
+  async signUp(userSignUpDto: UserSignUpDto) {
+    const { email, password, username } = userSignUpDto;
     const passwordStrengthResult = passwordStrength(password);
     if (
       passwordStrengthResult.value !== 'Strong' &&
@@ -41,8 +41,19 @@ export class AuthService {
         password: securePwd,
         role: UserRole.USER,
       };
-      await this.xataClient.db.users.create(createUserPayload);
+      const record = await this.xataClient.db.users.create(createUserPayload);
+      console.log(
+        '🚀 ~ file: auth.service.ts ~ line 45 ~ AuthService ~ signUp ~ record',
+        record,
+      );
     } catch (error) {
+      const uniqueConstraintBreachRegExp = /column \[(.*)\]: is not unique/;
+      const evaluationResult = uniqueConstraintBreachRegExp.exec(error.message);
+      if (evaluationResult) {
+        throw new BadRequestException(
+          `The given ${evaluationResult[1]} already exists`,
+        );
+      }
       throw new InternalServerErrorException(error);
     }
   }
