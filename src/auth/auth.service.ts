@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { UserSignUpDto } from './dtos/user-signup.dto';
 import { passwordStrength } from 'check-password-strength';
@@ -21,6 +22,24 @@ export class AuthService {
 
   async signIn(userSignInDto: UserSignInDto) {
     const { username, password } = userSignInDto;
+    const loginError = 'Invalid username and/or password';
+    try {
+      const record = await this.xataClient.db.users
+        .filter({
+          username,
+        })
+        .getFirst();
+
+      if (!record) {
+        throw new UnauthorizedException(loginError);
+      }
+      const isPasswordValid = await bcrypt.compare(password, record.password);
+      if (!isPasswordValid) {
+        throw new UnauthorizedException(loginError);
+      }
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 
   async signUp(userSignUpDto: UserSignUpDto) {
